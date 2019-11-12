@@ -33,12 +33,12 @@ long microsecondsToCentimeters(long microseconds) //for Distance sensor
    return microseconds / 29 / 2;
 }
 
-Servo tapOpen(servo)
+Servo tapOpen(Servo servo)
 {
   pos = 90;
   servo.write(90);      // tell servo to go to position in variable 'pos'
 }
-Servo tapClose(servo)
+Servo tapClose(Servo servo)
 {
   pos = 0;
   servo.write(pos);     // tell servo to go to position in variable 'pos'
@@ -71,7 +71,7 @@ void loop() {
    pinMode(ECHO_PIN, INPUT);
 
    duration1 = pulseIn(ECHO_PIN, HIGH);
-   cm1 = microsecondsToCentimeters(duration);
+   cm1 = microsecondsToCentimeters(duration1);
    Serial.print(cm1);
    Serial.print("cm");
    Serial.println();
@@ -103,7 +103,7 @@ delay(1000);
   Serial.println("DONE");
 
   Serial.print("Temperature is: ");
-  temp1 = sensors.getTempCByIndex(0) // You can have more than one IC on the same bus.
+  temp1 = sensors.getTempCByIndex(0); // You can have more than one IC on the same bus.
   // 0 refers to the first IC on the wire
   Serial.println();
   Serial.print(temp1); // Why "byIndex"?
