@@ -92,9 +92,9 @@ void loop() {
   }
 
   if(cm1>margin1)  // No bject is Placed at the Station
-    {
+  {
     tapClose(servo1);
-}
+  }
 delay(1000);
 
 
