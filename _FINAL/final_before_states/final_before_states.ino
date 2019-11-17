@@ -9,17 +9,11 @@ int pos = 0;    // variable to store the servo position
 long distance;
 int temp1;
 int margin1 = 10; // Sensor 1 - Margin
-int dbtwsens = 5 ; 
-int state;
-int s2i,s2f;
-
 
 /*--------------------------Pin Connections-----------*/
 #define TEMP_PIN 2 // Temp Sensor Pin
-#define TRIG_PIN_1 4 // Trigger Pin of Ultrasonic Sensor 1
-#define ECHO_PIN_1 3 // Echo Pin of Ultrasonic Sensor 1
-#define TRIG_PIN_2 4 // Trigger Pin of Ultrasonic Sensor 1
-#define ECHO_PIN_2 3 // Echo Pin of Ultrasonic Sensor 1
+#define TRIG_PIN 4 // Trigger Pin of Ultrasonic Sensor 1
+#define ECHO_PIN 3 // Echo Pin of Ultrasonic Sensor 1
 #define SERVOMD_PIN_SIG 13 //Servo Pin
 
 /*--------LCD PINS---*/
@@ -43,7 +37,6 @@ Servo tapOpen(Servo servo)
 {
   pos = 90;
   servo.write(90);      // tell servo to go to position in variable 'pos'
-  
 }
 Servo tapClose(Servo servo)
 {
@@ -58,13 +51,12 @@ void setup()
 //Servo Motor Beginning
    servo1.attach(SERVOMD_PIN_SIG);
 
-/* -----------Temp Sensor Beginning --------------------*/
+/* -----------Temp Sensor Beginning--------------------*/
    // Serial.println("Dallas Temperature IC Control Library Demo");
    sensors.begin();   // Start up the library
 /*LCD beginning */
 
 }
-
 /*----------------------LOOP----------------------------*/
 void loop() {
 
@@ -80,48 +72,12 @@ void loop() {
 
    duration1 = pulseIn(ECHO_PIN, HIGH);
    cm1 = microsecondsToCentimeters(duration1);
-
-    pinMode(TRIG_PIN, OUTPUT);
-   digitalWrite(TRIG_PIN, LOW);
-   delayMicroseconds(2);
-   digitalWrite(TRIG_PIN, HIGH);
-   delayMicroseconds(10);
-   digitalWrite(TRIG_PIN, LOW);
-   pinMode(ECHO_PIN, INPUT);
-
    Serial.print(cm1);
    Serial.print("cm");
    Serial.println();
    delay(100);
 
-  switch state
-    {
-    case 1: 
-        if(cm1<margin1)
-        {
-          state = 2;
-        }
-        break;
-    case 2:
-          tapOpen(servo1);
-          state = 3;
-          s2i = cm2;
-          break;
-    case 3: 
 
-    if(cm1>margin1)  // No bject is Placed at the Station
-    {
-      tapClose(servo1);
-    }
-    if(cm2 <  dbtwsens) // Extra 5 is for lag
-    {
-      tapClose(servo1);
-    }
-        break;
-    case 4:
-        
-        break;    
-    }
   if(cm1<margin1) //An object is present
   {
   delay(1000);
@@ -131,22 +87,15 @@ void loop() {
       if(cm1 < margin1)
       {
         tapOpen(servo1);
-        
-        
       }
     }
   }
 
-  
-
-  
-// delay(1000);
-// Automatic Closing
-
-else if(cm2 > margin2 )
-{
-   
-}
+  if(cm1>margin1)  // No bject is Placed at the Station
+  {
+    tapClose(servo1);
+  }
+delay(1000);
 
 
   Serial.print(" Requesting temperatures...");
