@@ -12,6 +12,7 @@ int margin1 = 10; // Sensor 1 - Margin
 int dbtwsens = 5 ;
 int state;
 int s2i,s2f;
+long duration1,duration2, inches, cm1,cm2;
 
 
 /*--------------------------Pin Connections-----------*/
@@ -20,7 +21,7 @@ int s2i,s2f;
 #define ECHO_PIN_1 3 // Echo Pin of Ultrasonic Sensor 1
 #define TRIG_PIN_2 4 // Trigger Pin of Ultrasonic Sensor 1
 #define ECHO_PIN_2 3 // Echo Pin of Ultrasonic Sensor 1
-#define SERVOMD_PIN_SIG 13 //Servo Pin
+#define SERVOMD_PIN 13 //Servo Pin
 
 /*--------LCD PINS---*/
 #define LCD_PIN_RS  12
@@ -30,8 +31,9 @@ int s2i,s2f;
 #define LCD_PIN_DB6 9
 #define LCD_PIN_DB7 10
 
-OneWire oneWire(TEMP_PIN); // Setup a oneWire instance to communicate with any OneWire devices
-DallasTemperature sensors(&oneWire); // Pass our oneWire reference to Dallas Temperature.
+/* Temp Sensor Fixing */
+OneWire oneWire1(TEMP_PIN); // Setup a oneWire instance to communicate with any OneWire devices
+DallasTemperature sensors(&oneWire1); // Pass our oneWire reference to Dallas Temperature.
 
 /*---------------------------Functions--------------------------*/
 long microsecondsToCentimeters(long microseconds) //for Distance sensor
@@ -42,7 +44,7 @@ long microsecondsToCentimeters(long microseconds) //for Distance sensor
 Servo tapOpen(Servo servo)
 {
   pos = 90;
-  servo.write(90);      // tell servo to go to position in variable 'pos'
+  servo.write(pos);      // tell servo to go to position in variable 'pos'
 
 }
 Servo tapClose(Servo servo)
@@ -56,20 +58,19 @@ void setup()
 // Starting Serial Terminal Giving a Baudrate of 9600
    Serial.begin(9600);
 //Servo Motor Beginning
-   servo1.attach(SERVOMD_PIN_SIG);
+   servo1.attach(SERVOMD_PIN);
 
 /* -----------Temp Sensor Beginning --------------------*/
    // Serial.println("Dallas Temperature IC Control Library Demo");
    sensors.begin();   // Start up the library
-/*LCD beginning */
+/*----------------------LCD beginning------------------------------------- */
 
 }
 
 /*----------------------LOOP----------------------------*/
 void loop() {
 
-//
-   long duration1,duration2, inches, cm1,cm2;
+/*------------------------- Distance Sensor 1 --------------------------*/
    pinMode(TRIG_PIN, OUTPUT);
    digitalWrite(TRIG_PIN, LOW);
    delayMicroseconds(2);
@@ -80,23 +81,39 @@ void loop() {
 
    duration1 = pulseIn(ECHO_PIN, HIGH);
    cm1 = microsecondsToCentimeters(duration1);
+   // Serial.print(cm1);
+   // Serial.print("cm");
+   // Serial.println();
 
-    pinMode(TRIG_PIN, OUTPUT);
-   digitalWrite(TRIG_PIN, LOW);
+/*------------------------- Distance Sensor 2 --------------------------*/
+  pinMode(TRIG_PIN_2, OUTPUT);
+   digitalWrite(TRIG_PIN_2, LOW);
    delayMicroseconds(2);
-   digitalWrite(TRIG_PIN, HIGH);
+   digitalWrite(TRIG_PIN_2, HIGH);
    delayMicroseconds(10);
-   digitalWrite(TRIG_PIN, LOW);
-   pinMode(ECHO_PIN, INPUT);
-
-   Serial.print(cm1);
-   Serial.print("cm");
-   Serial.println();
+   digitalWrite(TRIG_PIN_2, LOW);
+   pinMode(ECHO_PIN_2, INPUT);
+   duration2 = pulseIn(ECHO_PIN, HIGH);
+   cm2 = microsecondsToCentimeters(duration2);
+   // Serial.print(cm2);
+   // Serial.print("cm");
+   // Serial.println();
    delay(100);
 
-  switch state
+/*-------------------------Temperature sensor-----------------------------------*/
+   //Serial.print(" Requesting temperatures...");
+   sensors.requestTemperatures(); // Send the command to get temperatures
+   //Serial.println("DONE");
+
+   //Serial.print("Temperature is: ");
+   temp1 = sensors.getTempCByIndex(0); // You can have more than one IC on the same bus.
+   // 0 refers to the first IC on the wire
+   //Serial.println();
+   //Serial.print(temp1); // Why "byIndex"?
+
+  switch (state)
     {
-    case 1:
+    case 1: /* Idle State with tap Closed */
           if(cm1<margin1) //An object is present
           {
           delay(1000);
@@ -111,55 +128,34 @@ void loop() {
           }
 
           break;
-    case 2:
+    case 2: /* Tap opening */
           tapOpen(servo1);
           state = 3;
-          s2i = cm2;
+          s2i = cm2; // Taking the initial reading
           break;
-    case 3:
+    case 3: /* Idle Tap open  */
 
-          if(cm1>margin1)  // No bject is Placed at the Station
+          if(cm1 > margin1)  // No Object is Placed at the Station
           {
             state = 4;
           }
-          if(cm2 <  dbtwsens) // Extra 5 is for lag
+          if(cm2 < dbtwsens) // Extra 5 is for lag
           {
             state = 4;
           }
-          if(time > long_time)
-          {
-            state =4;
-          }
+          // if(time > long_time)
+          // {
+          //   state =4;
+          // }
           break;
-    case 4:
+    case 4: /* Tap Closing */
+          s2f = cm2 ;
           tapClose(servo1);
           state =1;
           break;
     }
 
 
-
-
-
-
-// delay(1000);
-// Automatic Closing
-
-else if(cm2 > margin2 )
-{
-
-}
-
-
-  Serial.print(" Requesting temperatures...");
-  sensors.requestTemperatures(); // Send the command to get temperatures
-  Serial.println("DONE");
-
-  Serial.print("Temperature is: ");
-  temp1 = sensors.getTempCByIndex(0); // You can have more than one IC on the same bus.
-  // 0 refers to the first IC on the wire
-  Serial.println();
-  Serial.print(temp1); // Why "byIndex"?
-
     delay(1000);
+    /*-------------------------LCD Display-----------------------------------*/
 }
