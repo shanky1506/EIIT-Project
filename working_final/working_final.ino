@@ -9,7 +9,7 @@ int pos = 0;    // variable to store the servo position
 long distance;
 int temp1;
 int margin1 = 10; // Sensor 1 - Margin
-int dbtwsens = 5 ; 
+int dbtwsens = 5 ;
 int state;
 int s2i,s2f;
 
@@ -43,7 +43,7 @@ Servo tapOpen(Servo servo)
 {
   pos = 90;
   servo.write(90);      // tell servo to go to position in variable 'pos'
-  
+
 }
 Servo tapClose(Servo servo)
 {
@@ -96,56 +96,58 @@ void loop() {
 
   switch state
     {
-    case 1: 
-        if(cm1<margin1)
-        {
-          state = 2;
-        }
-        break;
+    case 1:
+          if(cm1<margin1) //An object is present
+          {
+          delay(1000);
+            if(cm1 <margin1)
+            {
+              delay(1000);
+              if(cm1 < margin1)
+              {
+                state = 2;
+              }
+            }
+          }
+
+          break;
     case 2:
           tapOpen(servo1);
           state = 3;
           s2i = cm2;
           break;
-    case 3: 
+    case 3:
 
-    if(cm1>margin1)  // No bject is Placed at the Station
-    {
-      tapClose(servo1);
-    }
-    if(cm2 <  dbtwsens) // Extra 5 is for lag
-    {
-      tapClose(servo1);
-    }
-        break;
+          if(cm1>margin1)  // No bject is Placed at the Station
+          {
+            state = 4;
+          }
+          if(cm2 <  dbtwsens) // Extra 5 is for lag
+          {
+            state = 4;
+          }
+          if(time > long_time)
+          {
+            state =4;
+          }
+          break;
     case 4:
-        
-        break;    
+          tapClose(servo1);
+          state =1;
+          break;
     }
-  if(cm1<margin1) //An object is present
-  {
-  delay(1000);
-    if(cm1 <margin1)
-    {
-      delay(1000);
-      if(cm1 < margin1)
-      {
-        tapOpen(servo1);
-        
-        
-      }
-    }
-  }
 
-  
 
-  
+
+
+
+
 // delay(1000);
 // Automatic Closing
 
 else if(cm2 > margin2 )
 {
-   
+
 }
 
 
