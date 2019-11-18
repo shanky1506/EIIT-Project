@@ -1,6 +1,8 @@
 #include <Servo.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <LiquidCrystal.h>
+
 
 /*---------------Global Scope--------------------------*/
 
@@ -10,6 +12,7 @@ long distance;
 int temp1;
 int margin1 = 10; // Sensor 1 - Margin
 int dbtwsens = 5 ;
+int margin2 = 15;
 int state;
 int s2i,s2f;
 long duration1,duration2, inches, cm1,cm2;
@@ -30,7 +33,8 @@ long duration1,duration2, inches, cm1,cm2;
 #define LCD_PIN_DB5 8
 #define LCD_PIN_DB6 9
 #define LCD_PIN_DB7 10
-
+/* LCD */
+LiquidCrystal lcd(LCD_PIN_RS, LCD_PIN_E, LCD_PIN_DB4, LCD_PIN_DB5, LCD_PIN_DB6, LCD_PIN_DB7);
 /* Temp Sensor Fixing */
 OneWire oneWire1(TEMP_PIN); // Setup a oneWire instance to communicate with any OneWire devices
 DallasTemperature sensors(&oneWire1); // Pass our oneWire reference to Dallas Temperature.
@@ -64,7 +68,8 @@ void setup()
    // Serial.println("Dallas Temperature IC Control Library Demo");
    sensors.begin();   // Start up the library
 /*----------------------LCD beginning------------------------------------- */
-
+    lcd.begin(16, 2); // set up the LCD's number of columns and rows:
+    lcd.print("Arduino Tutorial"); //// Print a message to the LCD.
 }
 
 /*----------------------LOOP----------------------------*/
@@ -113,7 +118,7 @@ void loop() {
 
   switch (state)
     {
-    case 1: /* Idle State with tap Closed */
+    case 1: /* IDLE State with tap Closed */
           if(cm1<margin1) //An object is present
           {
           delay(1000);
@@ -133,7 +138,7 @@ void loop() {
           state = 3;
           s2i = cm2; // Taking the initial reading
           break;
-    case 3: /* Idle Tap open  */
+    case 3: /* IDLE Tap open  */
 
           if(cm1 > margin1)  // No Object is Placed at the Station
           {
@@ -158,4 +163,5 @@ void loop() {
 
     delay(1000);
     /*-------------------------LCD Display-----------------------------------*/
+      lcd.setCursor(0, 1);
 }
