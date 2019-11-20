@@ -1,5 +1,5 @@
-const int pingPin = 9; // Trigger Pin of Ultrasonic Sensor
-const int echoPin = 8; // Echo Pin of Ultrasonic Sensor
+const int pingPin = 7; // Trigger Pin of Ultrasonic Sensor
+const int echoPin = 6; // Echo Pin of Ultrasonic Sensor
 
 void setup() {
    Serial.begin(9600); // Starting Serial Terminal
@@ -19,10 +19,10 @@ void loop() {
    
    duration = pulseIn(echoPin, HIGH);
    // inches = microsecondsToInches(duration);
-   gcm = microsecondsToCentimeters(duration);
+   cm = microsecondsToCentimeters(duration);
   // Serial.print(inches);
   // Serial.print("in, ");
-  if(gcm < 200) cm = gcm;
+//  if(gcm < 200) cm = gcm;
    Serial.print(cm);
    Serial.print("cm");
    Serial.println();
