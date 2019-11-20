@@ -137,7 +137,15 @@ lcd.print(temp1);
      case 1: /* IDLE State with tap Closed */
 
           tapClose(servo1);
+          if(cm1 > margin1)
+          {
+            a =0;
+          }
           if(cm1<margin1 && cm1 != 0) //An object is present
+          {
+            a++;
+          }
+          if(a == 3)
           {
             state = 2 ;
           }
@@ -150,7 +158,7 @@ lcd.print(temp1);
     case 2: /* Tap opening */
 
           tapOpen(servo1);
-//          a = 0;
+          a = 0;
           state = 3;
           // s2i = cm2; // Taking the initial reading
           lcd.setCursor(1,0);
