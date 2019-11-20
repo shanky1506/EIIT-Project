@@ -1,5 +1,5 @@
-const int pingPin = 4; // Trigger Pin of Ultrasonic Sensor
-const int echoPin = 7; // Echo Pin of Ultrasonic Sensor
+const int pingPin = 9; // Trigger Pin of Ultrasonic Sensor
+const int echoPin = 8; // Echo Pin of Ultrasonic Sensor
 
 void setup() {
    Serial.begin(9600); // Starting Serial Terminal

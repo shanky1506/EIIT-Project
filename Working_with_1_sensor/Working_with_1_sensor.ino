@@ -10,9 +10,9 @@ Servo servo1;  // create servo object to control a servo
 int pos = 0;    // variable to store the servo position
 long distance;
 int temp1;
-int margin1 = 15; // Sensor 1 - Margin
-int dbtwsens = 20 ;
-//int margin2 = 15;
+int margin1 = 10; // Sensor 1 - Margin
+int dbtwsens = 5 ;
+int margin2 = 15;
 int state =1;
 int s2i,s2f;
 long duration1,duration2, inches, cm1,cm2,gcm1,gcm2;
@@ -107,7 +107,7 @@ void loop() {
     Serial.print(gcm2);
     Serial.print("cm2");
     Serial.println();
-//   delay(100);
+   delay(100);
    if(gcm2 < 500) // For filtering the Junk values
    {
      cm2 = gcm2;
@@ -128,7 +128,7 @@ Serial.println(state);
     {
     case 1: /* IDLE State with tap Closed */
 
-          tapClose(servo1);
+          
           if(cm1<margin1 && cm1 != 0) //An object is present
           {
              state = 2;
@@ -147,7 +147,7 @@ Serial.println(state);
           {
             state = 4;
           }
-//          if(cm2 < dbtwsens) // Extra 5 is for lag
+//          if(cm2 < dbtwsens+3) // Extra 5 is for lag
 //          {
 //            state = 4;
 //          }
@@ -165,7 +165,7 @@ Serial.println(state);
     }
 
 
-//    delay(1000);
+    delay(1000);
     /*-------------------------LCD Display-----------------------------------*/
 //      lcd.clear();
 //      lcd.setCursor(0,0);
